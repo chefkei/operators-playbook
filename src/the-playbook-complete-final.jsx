@@ -1061,6 +1061,496 @@ function CertsSection({user,brand,progress,onBack,onLogout,notifs,onToggleNotifs
   );
 }
 
+// ─── OPERATIONS SECTION ───────────────────────────────────────────
+const TOOLS_LIST = [
+  {id:"food-cost",  title:"Food Cost Calculator",   icon:"🧮", color:C.gold,   desc:"Calculate plate cost, food cost %, and ideal menu price for any dish."},
+  {id:"menu-price", title:"Menu Price Calculator",  icon:"💵", color:C.green,  desc:"Set menu prices based on your cost and target food cost percentage."},
+  {id:"labor",      title:"Labor Cost Calculator",  icon:"👷", color:C.purple, desc:"Track every position's hours and wages against projected weekly sales."},
+  {id:"break-even", title:"Break-Even Calculator",  icon:"📉", color:C.red,    desc:"Know exactly what you need to sell every day before you make a dollar."},
+  {id:"pl-tracker", title:"Weekly P&L Tracker",     icon:"📊", color:C.blue,   desc:"Enter your weekly numbers and see your full P&L with prime cost analysis."},
+  {id:"waste-log",  title:"Waste Log",              icon:"🗑️", color:C.orange, desc:"Track daily waste by station and reason to identify and eliminate loss."},
+];
+
+const SOPS_DATA = [
+  {id:"opening-foh", title:"Opening Procedures — FOH", icon:"🌅", color:C.gold,
+   sections:[
+    {title:"Arrive & Secure the Floor", steps:["Arrive 45 minutes before open","Check all tables are properly set — silverware, glassware, napkins","Walk every table and chair for wobbles, damage, or dirt","Check all menus are clean and current","Ensure host stand is stocked — menus, pens, reservation book or tablet"]},
+    {title:"Beverage Station Setup", steps:["Stock coffee station — filters, cups, condiments","Check all ice bins are full","Verify all beer taps are pouring clean","Check wine is properly stored and at correct temperature","Stock all servers' side stations with supplies"]},
+    {title:"Technology & Systems", steps:["Power on all POS terminals and verify they're functioning","Print the reservation list and review with host team","Check that all tablets or handheld devices are charged","Verify credit card terminals are processing","Test any digital menu boards or music systems"]},
+    {title:"Pre-Shift Meeting", steps:["Gather all FOH staff 15 minutes before open","Review the day's specials — taste them if possible","Cover 86'd items and any allergy alerts","Acknowledge top performer from last shift","Set the daily sales goal — share the break-even number","Assign sections, tables, and side work responsibilities"]},
+    {title:"Final Walk Before Open", steps:["Manager does a full floor walk","All lights at correct levels","Music at appropriate volume","Restrooms clean, stocked, and smelling fresh","All staff in uniform and in position","Doors open on time — no exceptions"]},
+  ]},
+  {id:"closing-foh", title:"Closing Procedures — FOH", icon:"🌙", color:C.purple,
+   sections:[
+    {title:"Last Guests Out", steps:["Last table acknowledged, check dropped, payment complete","Politely encourage departure once dining is complete","No staff visibly cleaning around seated guests","Thank every departing guest personally"]},
+    {title:"Floor & Furniture", steps:["All tables cleared, wiped, and reset","Chairs wiped and pushed in properly","Booths wiped down and sanitized","Host stand cleared and organized","Check under every booth and table for items left behind"]},
+    {title:"POS & Cash Close", steps:["Server checkouts completed — all cash and cards accounted for","Run end-of-day sales reports and file them","Count and verify all cash drawers","Safe is locked and combination is secured","All voids and comps documented with manager signature"]},
+    {title:"Facilities", steps:["All restrooms cleaned, sanitized, and stocked","Trash emptied and bags replaced","Mop entrance and high-traffic areas","Lights set to security level or off","All exterior doors locked and verified"]},
+  ]},
+  {id:"opening-boh", title:"Opening Procedures — BOH", icon:"🔪", color:C.orange,
+   sections:[
+    {title:"Arrive & Safety Check", steps:["Arrive 1 hour before service","Turn on all equipment — ovens, fryers, grill, steam table","Check all refrigeration temps — must be 41°F or below","Check freezer temps — must be 0°F or below","Inspect all equipment for damage or malfunction"]},
+    {title:"Line Check", steps:["Walk every station with the chef or lead cook","Taste every sauce, soup, and prep item made yesterday","Check temps on all hot and cold holds","Verify par levels for every station","Cross-reference with today's reservation count","Sign the line check sheet — manager reviews it"]},
+    {title:"Mise en Place Setup", steps:["Each station sets up to their checklist — nothing from memory","All containers labeled with item, date, and time","Prep list posted and checked off as completed","All allergen items stored separately and clearly labeled","Knives sanitized, sharpened, and at station"]},
+    {title:"Deliveries & Receiving", steps:["Check all deliveries against purchase order before signing","Inspect every item — reject anything that doesn't meet spec","Immediately date and label all received items","Store by FIFO — first in, first out, always","Log any substitutions or shortages for the chef"]},
+  ]},
+  {id:"closing-boh", title:"Closing Procedures — BOH", icon:"🧼", color:C.blue,
+   sections:[
+    {title:"Line Breakdown", steps:["Cool all hot food to 70°F within 2 hours, then to 41°F within 4 more","Label, date, and cover all stored items — every single one","Drain and clean all steam table wells","Break down all cutting boards, sanitize, and air dry","Clean and sanitize all prep surfaces with approved solution"]},
+    {title:"Equipment Cleaning", steps:["Clean and sanitize all grills, flat tops, and ranges","Empty and clean all fryers — filter or change oil per schedule","Clean inside of all ovens","Wipe down all reach-ins inside and out","Clean all floor mats and place them to dry upright"]},
+    {title:"Floors & Drains", steps:["Floors swept and mopped with sanitizer solution","All floor drains cleaned — never leave food debris in drains","Under equipment mopped","Walk-in floors swept and mopped","Check walk-in door gaskets for damage or mold"]},
+    {title:"Final Manager Walkthrough", steps:["Manager inspects every station before staff leaves","All refrigeration units confirmed closed and alarmed","Gas and equipment turned off per closing list","Back door locked and tested","Closing checklist signed and filed"]},
+  ]},
+  {id:"line-check", title:"Line Check Form", icon:"✅", color:C.green,
+   sections:[
+    {title:"Temperature Log", steps:["Walk-in cooler: ___°F (must be ≤41°F)","Walk-in freezer: ___°F (must be ≤0°F)","Reach-in #1: ___°F","Reach-in #2: ___°F","Hot hold (steam table): ___°F (must be ≥135°F)","Cold hold (prep table): ___°F (must be ≤41°F)"]},
+    {title:"Product Quality Checks", steps:["All sauces tasted and approved: YES / NO","Soups tasted and approved: YES / NO","All proteins at correct temp: YES / NO","Garnishes fresh and prepped: YES / NO","Allergen items properly labeled and separated: YES / NO"]},
+    {title:"Sign Off", steps:["Line Cook Sign-off: _______________ Time: ___","Chef / Lead Sign-off: _______________ Time: ___","Manager Sign-off: _______________ Time: ___","Issues noted: _______________","Corrective action taken: _______________"]},
+  ]},
+  {id:"pre-shift", title:"Pre-Shift Meeting Guide", icon:"📋", color:C.gold,
+   sections:[
+    {title:"The Structure (Every Shift)", steps:["OPEN (2 min): Acknowledge something good — a win, a shout-out from last shift","NUMBERS (2 min): Share reservation count and the daily sales goal","FOOD (3 min): Walk through specials. Describe them specifically. Make your team taste them.","86s & ALERTS (2 min): What's not available. Any allergy alerts for tonight's reservations.","FOCUS (3 min): One training topic — a service technique, an upsell strategy. One thing.","CLOSE (1 min): Fire them up. End on energy. Every single time."]},
+    {title:"Common Mistakes to Avoid", steps:["Making it too long — 15 minutes maximum, no exceptions","Turning it into a complaint session","Skipping it on busy nights — that's exactly when you need it most","Letting it become routine without new content","Not following up on what you covered"]},
+  ]},
+  {id:"server-sidework", title:"Server Sidework Checklist", icon:"🍽️", color:C.mutedLight,
+   sections:[
+    {title:"Opening Side Work", steps:["Stock all salt and pepper shakers — full","Fill all condiment caddy items","Roll silverware to par","Polish water glasses at your station — no spots","Restock all napkins at service station","Check linen on all tables — replace anything stained or rumpled"]},
+    {title:"During Service", steps:["Keep your section bussed — do not let dishes stack","Check water levels at every pass","Be aware of your tables' status at all times","Keep your service station clean and stocked","Never walk the floor empty-handed"]},
+    {title:"Closing Side Work", steps:["Break down your section — wipe all tables and chairs","Restock all condiments, sugars, and napkins to opening par","Roll silverware to closing par for next shift","Clean and sanitize your service station completely","Sweep your section — under tables and booths","Clock out only after manager sign-off on side work"]},
+  ]},
+  {id:"health-inspection", title:"Health Inspection Prep Guide", icon:"🏥", color:C.red,
+   sections:[
+    {title:"The Inspector's Top Priorities", steps:["Temperature control — they will check every cooler, every hold, every product","Employee hygiene — hand washing stations stocked, gloves used correctly","Cross-contamination prevention — raw proteins stored below ready-to-eat foods always","Date labeling — every item in your walk-in must be dated. No exceptions.","Pest control — evidence of rodents or insects is an automatic critical violation","Employee health policy — written policy on file, employees trained"]},
+    {title:"What to Have Ready at All Times", steps:["Current food handler certifications for all kitchen staff — posted or available","Written allergen policy — posted in kitchen","Most recent inspection report — posted in view of guests","Pest control service records — last 12 months","Equipment calibration records — thermometers especially"]},
+    {title:"Daily Non-Negotiables", steps:["Every item in cooler labeled with item name AND date made","Walk-in organized — raw proteins on bottom, ready-to-eat on top","All sanitizer buckets mixed correctly and accessible","Hand washing sink — nothing blocking it, always stocked","All staff washing hands after handling raw protein","Cutting boards — no deep scoring, clean, sanitized between uses"]},
+    {title:"If an Inspector Arrives", steps:["Greet them professionally — they are doing their job","Do not argue or get defensive","Walk with them and take notes on everything they observe","If a violation is noted, correct it immediately if possible","Sign the report — your signature means you received it, not that you agree","Correct all violations before the reinspection date"]},
+  ]},
+];
+
+const GUIDES_DATA = [
+  {id:"open-restaurant", title:"How to Open a Restaurant", icon:"🏗️", color:C.gold,
+   desc:"The complete 90-day pre-opening playbook. Follow every step in order.",
+   phases:[
+    {phase:"Days 90–75: Foundation", color:C.red, steps:[
+      {n:1,title:"Define Your Concept",detail:"Write one paragraph describing your restaurant: who the guest is, what the experience feels like, and what makes you different. This paragraph guides every decision for the next 90 days."},
+      {n:2,title:"Validate Your Market",detail:"Visit 10 restaurants in your target area in the next 2 weeks. Take notes on pricing, service, gaps. You are looking for white space — not confirmation that your idea is good."},
+      {n:3,title:"Build Your Financial Model",detail:"Before you sign a lease or spend a dollar, build a 3-year P&L projection. Include startup costs, monthly fixed costs, projected revenue at 50%, 70%, and 100% capacity."},
+      {n:4,title:"Secure Your Funding",detail:"Calculate total startup costs plus 6 months of operating capital. Sources: personal savings, SBA loan, investors, or restaurant-specific lenders. Do not open undercapitalized."},
+      {n:5,title:"Form Your Legal Entity",detail:"Register your business (LLC recommended). Get your EIN from the IRS. Open a dedicated business bank account. Never mix personal and business finances."},
+    ]},
+    {phase:"Days 75–45: Location & Build", color:C.orange, steps:[
+      {n:6,title:"Define Your Location Criteria",detail:"Write down your non-negotiables: square footage range, parking requirements, hood system present, grease trap in place, target neighborhoods, maximum rent."},
+      {n:7,title:"Evaluate Potential Spaces",detail:"For every space you visit, complete a Location Evaluation Checklist: foot traffic counts, visibility from street, neighboring businesses, loading access, existing infrastructure."},
+      {n:8,title:"Negotiate Your Lease",detail:"Never accept the first offer. Negotiate: free rent during build-out, tenant improvement allowance, renewal options with capped rent increases. Always have an attorney review."},
+      {n:9,title:"Apply for Permits & Licenses",detail:"Submit applications immediately after signing — they take time. You need: business license, food service permit, liquor license, certificate of occupancy, health department approval."},
+      {n:10,title:"Hire a Restaurant-Experienced Contractor",detail:"Get at least 3 bids. Ask for references from other restaurant builds. Define a detailed scope of work before any contract is signed. Build 3 weeks of buffer into your timeline."},
+    ]},
+    {phase:"Days 45–0: Systems & Launch", color:C.green, steps:[
+      {n:11,title:"Finalize Your Menu",detail:"Menu should be finalized 30 days before opening. Run every dish through your food cost calculator. Every item should have a standardized recipe card."},
+      {n:12,title:"Set Up Your POS System",detail:"Select and configure your POS. Build your full menu into the system. Set up all revenue centers. Configure modifier groups, voids, and comp codes."},
+      {n:13,title:"Build Your Training Program",detail:"Write your employee handbook. Build your training schedule for each position. Create your steps of service document. Minimum 2 weeks of structured training before opening."},
+      {n:14,title:"Run Your Soft Open",detail:"Invite friends and family. Run service as if it were real. Take detailed notes on every failure. The purpose of a soft open is to break things in a safe environment."},
+      {n:15,title:"Open Your Doors",detail:"Open on time. No exceptions. Be present on the floor. Greet every guest. Your job on opening day is to be the calm in the storm. Smile. You built this."},
+    ]},
+  ]},
+  {id:"build-menu", title:"How to Build Your Menu", icon:"🍽️", color:C.purple,
+   desc:"From concept to final printed menu — the complete menu development process.",
+   phases:[
+    {phase:"Step 1: Strategy", color:C.gold, steps:[
+      {n:1,title:"Define Your Menu's Job",detail:"Your menu is a sales tool, a cost control system, and a brand statement simultaneously. Before you write a single dish, answer: What is the highest-margin category? What 3 dishes do I want every guest to order?"},
+      {n:2,title:"Determine Your Menu Size",detail:"Smaller menus are almost always better. 6–8 starters, 8–12 entrees, 4–6 desserts is more than enough. A focused menu means better quality control, lower food cost, less waste."},
+      {n:3,title:"Set Your Price Positioning",detail:"Research your competitors. Know the lowest and highest price points in your market. Price anchoring: put your most expensive item first to make everything else seem reasonable."},
+    ]},
+    {phase:"Step 2: Engineering & Recipes", color:C.blue, steps:[
+      {n:4,title:"Cost Every Dish First",detail:"Use the food cost calculator for every single item. No dish gets on the menu without knowing its food cost percentage. Target: 28–32% for food, 18–22% for cocktails."},
+      {n:5,title:"Classify Every Item",detail:"Stars (high profit, high popularity), Plowhorses (popular but low margin), Puzzles (high margin but underordered), Dogs (low margin, low popularity). Stars go in prime real estate. Dogs get cut."},
+      {n:6,title:"Write Standardized Recipes",detail:"Every dish needs: exact ingredient quantities by weight, step-by-step preparation, plating photo, yield and portion size, cost per portion, allergen flags. No recipe card = no dish on the menu."},
+    ]},
+  ]},
+  {id:"hire-staff", title:"How to Hire & Onboard Staff", icon:"👥", color:C.green,
+   desc:"Hire slow, fire fast. Build a team that stays.",
+   phases:[
+    {phase:"Step 1: Before You Post", color:C.gold, steps:[
+      {n:1,title:"Write a Real Job Description",detail:"Write a job description that describes your culture, your standards, and what makes your restaurant different. The right candidate should feel excited reading it."},
+      {n:2,title:"Define Your Non-Negotiables",detail:"Before interviewing anyone, write down 3–5 non-negotiables for the role. Interview to these standards, not to likability."},
+      {n:3,title:"Know Your Compensation",detail:"Post the wage range. Candidates who don't see compensation waste both their time and yours. Low wages attract high turnover."},
+    ]},
+    {phase:"Step 2: Interview & Hire", color:C.purple, steps:[
+      {n:4,title:"The Phone Screen (10 min)",detail:"Before bringing anyone in, do a 10-minute phone screen. Listen for: Are they on time? Do they sound engaged? Can they articulate why they want this job?"},
+      {n:5,title:"Behavioral Interview Questions",detail:"Ask 'Tell me about a time when...' not 'What would you do if...' Listen for accountability, communication, and self-awareness."},
+      {n:6,title:"The Working Interview",detail:"For kitchen staff — always. For experienced FOH — highly recommended. A 2–3 hour working interview tells you more than any conversation."},
+    ]},
+    {phase:"Step 3: Onboarding", color:C.blue, steps:[
+      {n:7,title:"Day One Sets the Tone",detail:"Have their paperwork ready. Give them a tour. Introduce them to every person they'll work with. Make them feel like they belong here."},
+      {n:8,title:"Structured Training Schedule",detail:"Every new hire gets a written training schedule for their first 2 weeks. Day by day, what they're learning, who they're training with, what they need to pass."},
+      {n:9,title:"30-Day Check-In",detail:"At 30 days, every new hire gets a formal check-in. How are they feeling? What's going well? What's confusing? Most employees leave in the first 90 days — this is how you find out why before they go."},
+    ]},
+  ]},
+  {id:"weekly-inventory", title:"How to Run Weekly Inventory", icon:"📦", color:C.orange,
+   desc:"Inventory is the only way to know your actual food and beverage cost. Do it weekly.",
+   phases:[
+    {phase:"Step 1: Set Up Your System", color:C.gold, steps:[
+      {n:1,title:"Build Your Inventory Sheet",detail:"Your inventory sheet should mirror your storage areas — walk-in, dry storage, freezer, bar, prep. List every item, its unit of measure, and current cost per unit."},
+      {n:2,title:"Establish Count Frequency",detail:"Weekly: all high-cost proteins, seafood, premium spirits, and produce. Bi-weekly: dry goods and canned items. Monthly: paper goods and cleaning supplies."},
+      {n:3,title:"Assign Count Ownership",detail:"Chef counts BOH, Bar Manager counts bar, Manager supervises. Separate count and verification — the person who orders should not be the only person who counts."},
+    ]},
+    {phase:"Step 2: Count & Analyze", color:C.purple, steps:[
+      {n:4,title:"Count at the Same Time Every Week",detail:"Best practice: Sunday close or Monday morning before delivery. Consistency matters — you're measuring the same window of time every week."},
+      {n:5,title:"Calculate Your Actual Food Cost",detail:"Formula: (Beginning Inventory + Purchases) − Ending Inventory = COGS. Divide COGS by your sales = actual food cost %. A variance of more than 2–3% requires investigation."},
+      {n:6,title:"Investigate Variances",detail:"High variance means one of three things: over-portioning, waste, or theft. Check in that order. If variance is consistent and unexplained, you have a theft problem."},
+    ]},
+  ]},
+  {id:"read-pl", title:"How to Read Your P&L", icon:"📊", color:C.blue,
+   desc:"Your P&L is your scoreboard. If you can't read it, you can't manage your business.",
+   phases:[
+    {phase:"Understanding the Structure", color:C.gold, steps:[
+      {n:1,title:"The P&L Has Three Parts",detail:"1. Revenue (top line) — everything you sold. 2. Cost of Goods Sold — food cost + beverage cost. 3. Operating Expenses — labor, rent, utilities. What's left is your net profit or loss."},
+      {n:2,title:"Understand Percentages, Not Just Dollars",detail:"A food cost of $8,000 tells you nothing without context. A food cost of 32% of sales tells you exactly where you stand. Always convert dollar amounts to percentages of sales."},
+      {n:3,title:"Know Your Benchmarks",detail:"Food cost: 28–32%. Beverage cost: 18–22%. Labor: 30–35%. Prime cost: 55–65%. Rent: 6–10% of sales. Net profit: 5–15% for a healthy full-service restaurant."},
+    ]},
+    {phase:"Reading It Weekly", color:C.purple, steps:[
+      {n:4,title:"The Weekly Review Ritual",detail:"Block 30 minutes every Monday morning. Review in this order: 1) Sales vs. prior week. 2) Food cost actual vs. theoretical. 3) Labor cost actual vs. schedule. 4) Prime cost total."},
+      {n:5,title:"The Most Important Number Nobody Tracks",detail:"Your prime cost — food cost + beverage cost + labor — is the single most important number on your P&L. Under 60% is excellent. 60–65% is sustainable. Over 65% and you are working to pay other people."},
+      {n:6,title:"Never Let a Bad Week Pass Without a Plan",detail:"If your P&L shows a problem, address it in writing before that week is over. What happened? What will change? Who owns the change? What will you measure next week?"},
+    ]},
+  ]},
+  {id:"bar-program", title:"How to Set Up Your Bar Program", icon:"🍸", color:C.purple,
+   desc:"A great bar program can be your highest-margin revenue center. Build it right.",
+   phases:[
+    {phase:"Step 1: Concept & Menu", color:C.gold, steps:[
+      {n:1,title:"Define Your Bar Identity",detail:"Your bar should reflect your restaurant's concept. Define: What are 3–5 words that describe your bar? What price range? What's your signature cocktail?"},
+      {n:2,title:"Build a Focused Cocktail Menu",detail:"Start with 8–12 cocktails maximum. Cost every cocktail. Target: 18–22% beverage cost. Price them confidently — guests pay for experience, not just ingredients."},
+      {n:3,title:"Set Up Your Well, Call, and Premium Tiers",detail:"Train your team to suggest call and premium: 'Would you like that with Tito's or our well vodka?' That question alone moves check averages significantly."},
+    ]},
+    {phase:"Step 2: Systems & Training", color:C.orange, steps:[
+      {n:4,title:"Standardize Every Pour",detail:"Write a recipe card for every cocktail: exact spirit amount, every modifier and amount, ice type, glassware, garnish, and estimated cost. A bartender guessing at pours is giving away margin."},
+      {n:5,title:"Set Up Weekly Liquor Inventory",detail:"Count every bottle every week. Variance between what you poured (per POS) and what you used (per inventory) tells you if you have a problem. Acceptable variance: under 3%."},
+      {n:6,title:"Certify Every Bartender on the Menu",detail:"Before any bartender works independently, they must make every cocktail to spec, recite the spirit list and price tiers, and pass a tasting of house cocktails."},
+    ]},
+  ]},
+];
+
+// Food Cost Calculator
+function FoodCostTool() {
+  const [ingredients, setIngredients] = useState([
+    {id:1,name:"Chicken Breast",unit:"oz",qty:"6",cost:"0.45"},
+    {id:2,name:"Mixed Greens",unit:"oz",qty:"3",cost:"0.18"},
+    {id:3,name:"Olive Oil",unit:"oz",qty:"0.5",cost:"0.22"},
+  ]);
+  const [menuPrice, setMenuPrice] = useState("18.00");
+  const [portions, setPortions] = useState("1");
+  const [newIng, setNewIng] = useState({name:"",unit:"oz",qty:"",cost:""});
+  const totalCost = ingredients.reduce((a,i)=>a+(parseFloat(i.qty)||0)*(parseFloat(i.cost)||0),0);
+  const cpp = totalCost/(parseFloat(portions)||1);
+  const fcPct = parseFloat(menuPrice)>0?(cpp/parseFloat(menuPrice))*100:0;
+  const idealPrice = cpp/0.30;
+  const profit = parseFloat(menuPrice)-cpp;
+  const statusColor = fcPct<=28?C.green:fcPct<=35?C.gold:C.red;
+  const statusLabel = fcPct<=28?"Excellent":fcPct<=35?"Acceptable":"Too High";
+  const inp = {background:"#0C0C0C",border:`1px solid ${C.border}`,borderRadius:2,padding:"8px 10px",color:C.white,fontSize:12,fontFamily:"Georgia,serif",outline:"none"};
+  return (
+    <div style={{fontFamily:"Georgia,serif"}}>
+      <p style={{fontSize:13,color:C.mutedLight,lineHeight:1.7,marginBottom:20}}>Enter every ingredient in a dish to calculate your food cost percentage, ideal menu price, and profit per plate.</p>
+      <div style={{display:"grid",gridTemplateColumns:"2fr 1fr 1fr 1fr auto",gap:8,marginBottom:8}}>
+        {["Ingredient","Unit","Qty","$/Unit",""].map((h,i)=><div key={i} style={{fontSize:9,letterSpacing:2,color:C.muted,textTransform:"uppercase"}}>{h}</div>)}
+      </div>
+      {ingredients.map(ing=>(
+        <div key={ing.id} style={{display:"grid",gridTemplateColumns:"2fr 1fr 1fr 1fr auto",gap:8,marginBottom:6,alignItems:"center"}}>
+          <input value={ing.name} onChange={e=>setIngredients(p=>p.map(x=>x.id===ing.id?{...x,name:e.target.value}:x))} style={inp}/>
+          <select value={ing.unit} onChange={e=>setIngredients(p=>p.map(x=>x.id===ing.id?{...x,unit:e.target.value}:x))} style={{...inp,padding:"8px"}}>
+            {["oz","lb","g","kg","cup","tbsp","tsp","each"].map(u=><option key={u}>{u}</option>)}
+          </select>
+          <input value={ing.qty} onChange={e=>setIngredients(p=>p.map(x=>x.id===ing.id?{...x,qty:e.target.value}:x))} type="number" style={inp}/>
+          <input value={ing.cost} onChange={e=>setIngredients(p=>p.map(x=>x.id===ing.id?{...x,cost:e.target.value}:x))} type="number" style={inp}/>
+          <button onClick={()=>setIngredients(p=>p.filter(x=>x.id!==ing.id))} style={{background:"none",border:`1px solid ${C.red}33`,borderRadius:2,padding:"6px 10px",color:C.red,fontSize:11,cursor:"pointer",fontFamily:"Georgia,serif"}}>✕</button>
+        </div>
+      ))}
+      <div style={{display:"grid",gridTemplateColumns:"2fr 1fr 1fr 1fr auto",gap:8,marginTop:10,alignItems:"center"}}>
+        <input value={newIng.name} onChange={e=>setNewIng(p=>({...p,name:e.target.value}))} placeholder="New ingredient" style={{...inp,border:`1px solid ${C.borderGold}`}}/>
+        <select value={newIng.unit} onChange={e=>setNewIng(p=>({...p,unit:e.target.value}))} style={{...inp,padding:"8px"}}>{["oz","lb","g","kg","cup","tbsp","tsp","each"].map(u=><option key={u}>{u}</option>)}</select>
+        <input value={newIng.qty} onChange={e=>setNewIng(p=>({...p,qty:e.target.value}))} type="number" placeholder="0" style={inp}/>
+        <input value={newIng.cost} onChange={e=>setNewIng(p=>({...p,cost:e.target.value}))} type="number" placeholder="0.00" style={inp}/>
+        <button onClick={()=>{if(newIng.name){setIngredients(p=>[...p,{...newIng,id:Date.now()}]);setNewIng({name:"",unit:"oz",qty:"",cost:""});}}} style={{background:gold,border:"none",borderRadius:2,padding:"8px 12px",color:C.black,fontSize:11,fontWeight:"bold",cursor:"pointer",fontFamily:"Georgia,serif"}}>+</button>
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginTop:20}}>
+        <div><label style={{display:"block",fontSize:9,letterSpacing:3,color:C.gold,textTransform:"uppercase",marginBottom:6}}>Menu Price ($)</label><input value={menuPrice} onChange={e=>setMenuPrice(e.target.value)} type="number" style={{...inp,width:"100%",boxSizing:"border-box"}}/></div>
+        <div><label style={{display:"block",fontSize:9,letterSpacing:3,color:C.gold,textTransform:"uppercase",marginBottom:6}}>Portions from Recipe</label><input value={portions} onChange={e=>setPortions(e.target.value)} type="number" style={{...inp,width:"100%",boxSizing:"border-box"}}/></div>
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(130px,1fr))",gap:10,marginTop:20}}>
+        {[[`$${totalCost.toFixed(2)}`,"Recipe Cost",C.gold],[`$${cpp.toFixed(2)}`,"Cost/Portion",C.gold],[`${fcPct.toFixed(1)}%`,"Food Cost %",statusColor,statusLabel],[`$${profit.toFixed(2)}`,"Profit/Plate",C.green],[`$${idealPrice.toFixed(2)}`,"Ideal Price",C.purple,"at 30% FC"]].map(([v,l,c,s])=>(
+          <div key={l} style={{background:`${c}0D`,border:`1px solid ${c}33`,borderRadius:2,padding:"12px 14px",textAlign:"center"}}>
+            <div style={{fontSize:9,letterSpacing:2,color:c,textTransform:"uppercase",marginBottom:4}}>{l}</div>
+            <div style={{fontSize:20,fontWeight:"bold",color:c,lineHeight:1}}>{v}</div>
+            {s&&<div style={{fontSize:9,color:C.muted,marginTop:3}}>{s}</div>}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Break Even Calculator
+function BreakEvenTool() {
+  const [fixed, setFixed] = useState([
+    {id:1,name:"Rent",amount:"8500"},{id:2,name:"Utilities",amount:"1200"},
+    {id:3,name:"Insurance",amount:"800"},{id:4,name:"Loan Payment",amount:"2200"},
+  ]);
+  const [varPct, setVarPct] = useState("65");
+  const [avgCheck, setAvgCheck] = useState("42");
+  const [newFixed, setNewFixed] = useState({name:"",amount:""});
+  const totalFixed = fixed.reduce((a,f)=>a+(parseFloat(f.amount)||0),0);
+  const beS = totalFixed/(1-parseFloat(varPct)/100);
+  const beC = beS/(parseFloat(avgCheck)||1);
+  const inp = {background:"#0C0C0C",border:`1px solid ${C.border}`,borderRadius:2,padding:"8px 10px",color:C.white,fontSize:12,fontFamily:"Georgia,serif",outline:"none"};
+  return (
+    <div style={{fontFamily:"Georgia,serif"}}>
+      <p style={{fontSize:13,color:C.mutedLight,lineHeight:1.7,marginBottom:20}}>Enter your fixed monthly costs. The calculator shows exactly how much you need to sell every day before you make a dollar of profit.</p>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:20}}>
+        <div><label style={{display:"block",fontSize:9,letterSpacing:3,color:C.gold,textTransform:"uppercase",marginBottom:6}}>Variable Cost % (food+labor)</label><input value={varPct} onChange={e=>setVarPct(e.target.value)} type="number" style={{...inp,width:"100%",boxSizing:"border-box"}}/></div>
+        <div><label style={{display:"block",fontSize:9,letterSpacing:3,color:C.gold,textTransform:"uppercase",marginBottom:6}}>Average Check Per Guest ($)</label><input value={avgCheck} onChange={e=>setAvgCheck(e.target.value)} type="number" style={{...inp,width:"100%",boxSizing:"border-box"}}/></div>
+      </div>
+      <div style={{fontSize:9,letterSpacing:3,color:C.gold,textTransform:"uppercase",marginBottom:10}}>Monthly Fixed Costs</div>
+      {fixed.map(f=>(
+        <div key={f.id} style={{display:"grid",gridTemplateColumns:"1fr 1fr auto",gap:8,marginBottom:6,alignItems:"center"}}>
+          <input value={f.name} onChange={e=>setFixed(p=>p.map(x=>x.id===f.id?{...x,name:e.target.value}:x))} style={inp}/>
+          <input value={f.amount} onChange={e=>setFixed(p=>p.map(x=>x.id===f.id?{...x,amount:e.target.value}:x))} type="number" style={inp}/>
+          <button onClick={()=>setFixed(p=>p.filter(x=>x.id!==f.id))} style={{background:"none",border:`1px solid ${C.red}33`,borderRadius:2,padding:"6px 10px",color:C.red,fontSize:11,cursor:"pointer",fontFamily:"Georgia,serif"}}>✕</button>
+        </div>
+      ))}
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr auto",gap:8,marginTop:10,alignItems:"center"}}>
+        <input value={newFixed.name} onChange={e=>setNewFixed(p=>({...p,name:e.target.value}))} placeholder="Cost name" style={{...inp,border:`1px solid ${C.borderGold}`}}/>
+        <input value={newFixed.amount} onChange={e=>setNewFixed(p=>({...p,amount:e.target.value}))} type="number" placeholder="0.00" style={inp}/>
+        <button onClick={()=>{if(newFixed.name&&newFixed.amount){setFixed(p=>[...p,{...newFixed,id:Date.now()}]);setNewFixed({name:"",amount:""});}}} style={{background:gold,border:"none",borderRadius:2,padding:"8px 12px",color:C.black,fontSize:11,fontWeight:"bold",cursor:"pointer",fontFamily:"Georgia,serif"}}>+</button>
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(140px,1fr))",gap:10,marginTop:24}}>
+        {[[`$${totalFixed.toLocaleString()}`,"Fixed Costs/Mo",C.gold],[`$${Math.round(beS).toLocaleString()}`,"Break-Even Sales/Mo",C.red],[`$${Math.round(beS/30).toLocaleString()}`,"Break-Even/Day",C.orange],[String(Math.round(beC/30)),"Covers Needed/Day",C.purple]].map(([v,l,c])=>(
+          <div key={l} style={{background:`${c}0D`,border:`1px solid ${c}33`,borderRadius:2,padding:"12px 14px",textAlign:"center"}}>
+            <div style={{fontSize:9,letterSpacing:2,color:c,textTransform:"uppercase",marginBottom:4}}>{l}</div>
+            <div style={{fontSize:20,fontWeight:"bold",color:c,lineHeight:1}}>{v}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{marginTop:16,padding:"14px 18px",background:`${C.gold}0A`,border:`1px solid ${C.borderGold}`,borderRadius:2}}>
+        <div style={{fontSize:11,fontWeight:"bold",color:C.gold,marginBottom:6}}>📌 Post This Number Every Shift</div>
+        <div style={{fontSize:13,color:C.white,lineHeight:1.7}}>You need <strong style={{color:C.gold}}>${Math.round(beS/30).toLocaleString()}</strong> in daily sales and <strong style={{color:C.gold}}>{Math.round(beC/30)} covers</strong> every day before you make one dollar of profit.</div>
+      </div>
+    </div>
+  );
+}
+
+// SOP Viewer
+function SOPViewer({sop,onBack}) {
+  const [checked,setChecked]=useState({});
+  const total = sop.sections.reduce((a,s)=>a+s.steps.length,0);
+  const done = Object.values(checked).filter(Boolean).length;
+  const pct = Math.round((done/total)*100);
+  return (
+    <div>
+      <button onClick={onBack} style={{background:"none",border:"none",color:C.gold,fontSize:9,letterSpacing:3,textTransform:"uppercase",cursor:"pointer",fontFamily:"Georgia,serif",marginBottom:20}}>← Back to SOPs</button>
+      <div style={{marginBottom:24}}>
+        <div style={{fontSize:28,marginBottom:8}}>{sop.icon}</div>
+        <h3 style={{fontSize:"clamp(18px,3vw,28px)",fontWeight:"bold",color:C.white,margin:"0 0 8px"}}>{sop.title}</h3>
+        <div style={{maxWidth:300}}>
+          <div style={{display:"flex",justifyContent:"space-between",marginBottom:6}}><span style={{fontSize:9,letterSpacing:2,color:C.muted,textTransform:"uppercase",fontFamily:"Georgia,serif"}}>Completion</span><span style={{fontSize:9,color:sop.color,fontFamily:"Georgia,serif"}}>{done}/{total}</span></div>
+          <Bar pct={pct} color={`linear-gradient(to right,${sop.color}88,${sop.color})`}/>
+        </div>
+      </div>
+      {sop.sections.map((section,si)=>(
+        <div key={si} style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:2,padding:"18px 20px",marginBottom:10}}>
+          <div style={{fontSize:11,fontWeight:"bold",color:sop.color,marginBottom:14,letterSpacing:1,fontFamily:"Georgia,serif",textTransform:"uppercase"}}>{String(si+1).padStart(2,"0")} — {section.title}</div>
+          {section.steps.map((step,si2)=>{
+            const key=`${si}-${si2}`;
+            return (
+              <div key={si2} onClick={()=>setChecked(p=>({...p,[key]:!p[key]}))} style={{display:"flex",alignItems:"flex-start",gap:12,padding:"9px 0",borderBottom:si2<section.steps.length-1?`1px solid ${C.border}`:"none",cursor:"pointer"}}>
+                <div style={{width:20,height:20,borderRadius:2,border:`1px solid ${checked[key]?sop.color:C.border}`,background:checked[key]?`${sop.color}22`:"transparent",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,color:sop.color,flexShrink:0,marginTop:1}}>{checked[key]?"✓":""}</div>
+                <span style={{fontSize:13,color:checked[key]?C.muted:C.white,lineHeight:1.6,textDecoration:checked[key]?"line-through":"none",fontFamily:"Georgia,serif",transition:"all .2s"}}>{step}</span>
+              </div>
+            );
+          })}
+        </div>
+      ))}
+      <div style={{display:"flex",gap:10,marginTop:16}}>
+        <GBtn small outline onClick={()=>setChecked({})}>Reset Checklist</GBtn>
+        {pct===100&&<div style={{padding:"8px 16px",background:`${C.green}0D`,border:`1px solid ${C.green}44`,borderRadius:2,fontSize:9,letterSpacing:3,color:C.green,textTransform:"uppercase",fontFamily:"Georgia,serif",display:"flex",alignItems:"center"}}>✓ Complete</div>}
+      </div>
+    </div>
+  );
+}
+
+// Guide Viewer
+function GuideViewer({guide,onBack}) {
+  const [openPhase,setOpenPhase]=useState(0);
+  const [openStep,setOpenStep]=useState(null);
+  return (
+    <div>
+      <button onClick={onBack} style={{background:"none",border:"none",color:C.gold,fontSize:9,letterSpacing:3,textTransform:"uppercase",cursor:"pointer",fontFamily:"Georgia,serif",marginBottom:20}}>← Back to Guides</button>
+      <div style={{marginBottom:28}}>
+        <div style={{fontSize:32,marginBottom:8}}>{guide.icon}</div>
+        <h3 style={{fontSize:"clamp(18px,3vw,28px)",fontWeight:"bold",color:C.white,margin:"0 0 8px"}}>{guide.title}</h3>
+        <p style={{fontSize:13,color:C.mutedLight,margin:"0 0 8px"}}>{guide.desc}</p>
+        <div style={{fontSize:11,color:C.muted,fontFamily:"Georgia,serif"}}>{guide.phases.reduce((a,p)=>a+p.steps.length,0)} steps · Follow in order</div>
+      </div>
+      {guide.phases.map((phase,pi)=>(
+        <div key={pi} style={{marginBottom:10}}>
+          <div onClick={()=>setOpenPhase(openPhase===pi?null:pi)} style={{background:C.card,border:`1px solid ${openPhase===pi?phase.color+"55":C.border}`,borderRadius:2,padding:"14px 18px",cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center",transition:"all .2s"}}>
+            <div style={{display:"flex",alignItems:"center",gap:12}}>
+              <div style={{width:3,height:24,background:phase.color,borderRadius:2,flexShrink:0}}/>
+              <div>
+                <div style={{fontSize:11,fontWeight:"bold",color:phase.color,letterSpacing:1,textTransform:"uppercase",fontFamily:"Georgia,serif"}}>{phase.phase}</div>
+                <div style={{fontSize:11,color:C.muted,fontFamily:"Georgia,serif"}}>{phase.steps.length} steps</div>
+              </div>
+            </div>
+            <span style={{color:C.muted,fontSize:16}}>{openPhase===pi?"▲":"▼"}</span>
+          </div>
+          {openPhase===pi&&(
+            <div style={{border:`1px solid ${C.border}`,borderTop:"none",borderRadius:"0 0 2px 2px",overflow:"hidden"}}>
+              {phase.steps.map((step,si)=>(
+                <div key={si}>
+                  <div onClick={()=>setOpenStep(openStep===`${pi}-${si}`?null:`${pi}-${si}`)} style={{padding:"14px 18px",background:openStep===`${pi}-${si}`?C.cardHover:C.card,borderBottom:`1px solid ${C.border}`,cursor:"pointer",display:"flex",alignItems:"center",gap:14,transition:"all .2s"}}>
+                    <div style={{width:28,height:28,borderRadius:2,background:`${phase.color}18`,border:`1px solid ${phase.color}44`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:"bold",color:phase.color,flexShrink:0,fontFamily:"Georgia,serif"}}>{step.n}</div>
+                    <div style={{flex:1,fontSize:14,fontWeight:"bold",color:C.white,fontFamily:"Georgia,serif"}}>{step.title}</div>
+                    <span style={{color:C.muted,fontSize:14}}>{openStep===`${pi}-${si}`?"−":"+"}</span>
+                  </div>
+                  {openStep===`${pi}-${si}`&&(
+                    <div style={{padding:"16px 18px 16px 60px",background:`${phase.color}06`,borderBottom:`1px solid ${C.border}`}}>
+                      <p style={{fontSize:13,color:C.white,lineHeight:1.8,margin:0,fontFamily:"Georgia,serif"}}>{step.detail}</p>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function OperationsSection({user,brand,onBack,onLogout,notifs,onToggleNotifs,showNotifs,onMarkAll}) {
+  const [view,setView]=useState("home"); // home | tools | sops | guides
+  const [activeTool,setActiveTool]=useState(null);
+  const [activeSOP,setActiveSOP]=useState(null);
+  const [activeGuide,setActiveGuide]=useState(null);
+
+  const goHome=()=>{setView("home");setActiveTool(null);setActiveSOP(null);setActiveGuide(null);};
+
+  const SECTIONS=[
+    {id:"tools",  label:"Working Tools",        icon:"🧮", color:C.gold,   desc:"6 calculators — food cost, labor, break-even, P&L, and more."},
+    {id:"sops",   label:"SOP Library",          icon:"📋", color:C.purple, desc:"8 ready-to-use checklists for every shift."},
+    {id:"guides", label:"Step-by-Step Guides",  icon:"📖", color:C.blue,   desc:"6 complete playbooks covering every major operational challenge."},
+  ];
+
+  return (
+    <div style={{background:C.black,minHeight:"100vh",fontFamily:"Georgia,serif"}}>
+      <Header user={user} brand={brand} onBack={view==="home"?onBack:goHome} backLabel={view==="home"?"Dashboard":"Operations"} onLogout={onLogout} onHome={view==="home"?onBack:goHome} notifs={notifs} onToggleNotifs={onToggleNotifs} showNotifs={showNotifs} onMarkAll={onMarkAll}/>
+      <main style={{maxWidth:1000,margin:"0 auto",padding:"36px 16px 80px"}}>
+
+        {/* HOME */}
+        {view==="home"&&<>
+          <div style={{fontSize:9,letterSpacing:4,color:C.blue,textTransform:"uppercase",marginBottom:12}}>⚙️ &nbsp; Operations Center</div>
+          <h2 style={{fontSize:"clamp(22px,4vw,38px)",fontWeight:"bold",color:C.white,margin:"0 0 8px"}}>Tools, SOPs & Guides</h2>
+          <p style={{fontSize:13,color:C.mutedLight,marginBottom:32}}>Everything you need to run a tight operation — no guesswork.</p>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:13}}>
+            {SECTIONS.map(sec=>(
+              <div key={sec.id} onClick={()=>setView(sec.id)}
+                style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:2,padding:"22px 22px",cursor:"pointer",position:"relative",overflow:"hidden",transition:"all .2s"}}
+                onMouseEnter={e=>{e.currentTarget.style.borderColor=sec.color+"44";e.currentTarget.style.background=C.cardHover;}}
+                onMouseLeave={e=>{e.currentTarget.style.borderColor=C.border;e.currentTarget.style.background=C.card;}}>
+                <div style={{position:"absolute",top:0,left:0,width:3,height:"100%",background:`linear-gradient(to bottom,${sec.color},transparent)`}}/>
+                <div style={{fontSize:28,marginBottom:10}}>{sec.icon}</div>
+                <div style={{fontSize:15,fontWeight:"bold",color:C.white,marginBottom:7}}>{sec.label}</div>
+                <div style={{fontSize:12,color:C.muted,lineHeight:1.6,marginBottom:12}}>{sec.desc}</div>
+                <div style={{fontSize:9,letterSpacing:2,color:sec.color,textTransform:"uppercase"}}>Open →</div>
+              </div>
+            ))}
+          </div>
+        </>}
+
+        {/* TOOLS */}
+        {view==="tools"&&!activeTool&&<>
+          <div style={{fontSize:9,letterSpacing:4,color:C.gold,textTransform:"uppercase",marginBottom:12}}>🧮 &nbsp; Working Tools</div>
+          <h2 style={{fontSize:"clamp(20px,4vw,34px)",fontWeight:"bold",color:C.white,margin:"0 0 8px"}}>Calculators</h2>
+          <p style={{fontSize:13,color:C.mutedLight,marginBottom:28}}>Real tools that do the math for you.</p>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:13}}>
+            {TOOLS_LIST.map(tool=>(
+              <div key={tool.id} onClick={()=>setActiveTool(tool.id)}
+                style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:2,padding:"20px 22px",cursor:"pointer",transition:"all .2s",position:"relative",overflow:"hidden"}}
+                onMouseEnter={e=>e.currentTarget.style.borderColor=tool.color+"44"}
+                onMouseLeave={e=>e.currentTarget.style.borderColor=C.border}>
+                <div style={{position:"absolute",top:0,left:0,width:3,height:"100%",background:`linear-gradient(to bottom,${tool.color},transparent)`}}/>
+                <div style={{fontSize:28,marginBottom:10}}>{tool.icon}</div>
+                <div style={{fontSize:15,fontWeight:"bold",color:C.white,marginBottom:7}}>{tool.title}</div>
+                <div style={{fontSize:12,color:C.muted,lineHeight:1.6,marginBottom:12}}>{tool.desc}</div>
+                <div style={{fontSize:9,letterSpacing:2,color:tool.color,textTransform:"uppercase"}}>Open Tool →</div>
+              </div>
+            ))}
+          </div>
+        </>}
+
+        {view==="tools"&&activeTool&&<>
+          <button onClick={()=>setActiveTool(null)} style={{background:"none",border:"none",color:C.gold,fontSize:9,letterSpacing:3,textTransform:"uppercase",cursor:"pointer",fontFamily:"Georgia,serif",marginBottom:20}}>← Back to Tools</button>
+          <h2 style={{fontSize:"clamp(20px,4vw,32px)",fontWeight:"bold",color:C.white,margin:"0 0 20px"}}>{TOOLS_LIST.find(t=>t.id===activeTool)?.title}</h2>
+          {activeTool==="food-cost"&&<FoodCostTool/>}
+          {activeTool==="break-even"&&<BreakEvenTool/>}
+          {(activeTool==="menu-price"||activeTool==="labor"||activeTool==="pl-tracker"||activeTool==="waste-log")&&(
+            <div style={{padding:24,background:C.card,border:`1px solid ${C.border}`,borderRadius:2,color:C.mutedLight,fontSize:13,lineHeight:1.7}}>
+              This calculator is available in the full platform. It covers: {activeTool==="menu-price"?"setting menu prices based on your cost and target food cost %":activeTool==="labor"?"tracking every position's hours and wages against projected weekly sales":activeTool==="pl-tracker"?"entering your weekly numbers to see your full P&L with prime cost analysis":"tracking daily waste by station and reason to identify and eliminate loss"}.
+            </div>
+          )}
+        </>}
+
+        {/* SOPS */}
+        {view==="sops"&&!activeSOP&&<>
+          <div style={{fontSize:9,letterSpacing:4,color:C.purple,textTransform:"uppercase",marginBottom:12}}>📋 &nbsp; SOP Library</div>
+          <h2 style={{fontSize:"clamp(20px,4vw,34px)",fontWeight:"bold",color:C.white,margin:"0 0 8px"}}>Standard Operating Procedures</h2>
+          <p style={{fontSize:13,color:C.mutedLight,marginBottom:28}}>Ready-to-use checklists for every shift. Click any item to check it off.</p>
+          <div style={{display:"flex",flexDirection:"column",gap:10}}>
+            {SOPS_DATA.map(sop=>(
+              <div key={sop.id} onClick={()=>setActiveSOP(sop.id)}
+                style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:2,padding:"16px 20px",cursor:"pointer",display:"flex",alignItems:"center",gap:16,transition:"all .2s"}}
+                onMouseEnter={e=>e.currentTarget.style.borderColor=sop.color+"44"}
+                onMouseLeave={e=>e.currentTarget.style.borderColor=C.border}>
+                <div style={{fontSize:28,flexShrink:0}}>{sop.icon}</div>
+                <div style={{flex:1}}>
+                  <div style={{fontSize:14,fontWeight:"bold",color:C.white,marginBottom:4}}>{sop.title}</div>
+                  <div style={{fontSize:11,color:C.muted}}>{sop.sections.length} sections · Click to open checklist</div>
+                </div>
+                <Pill color={sop.color}>{sop.sections.reduce((a,s)=>a+s.steps.length,0)} steps</Pill>
+              </div>
+            ))}
+          </div>
+        </>}
+
+        {view==="sops"&&activeSOP&&<SOPViewer sop={SOPS_DATA.find(s=>s.id===activeSOP)} onBack={()=>setActiveSOP(null)}/>}
+
+        {/* GUIDES */}
+        {view==="guides"&&!activeGuide&&<>
+          <div style={{fontSize:9,letterSpacing:4,color:C.blue,textTransform:"uppercase",marginBottom:12}}>📖 &nbsp; Step-by-Step Guides</div>
+          <h2 style={{fontSize:"clamp(20px,4vw,34px)",fontWeight:"bold",color:C.white,margin:"0 0 8px"}}>The Complete Playbooks</h2>
+          <p style={{fontSize:13,color:C.mutedLight,marginBottom:28}}>Follow each guide step by step. No skipping. If you do every step, you will not fail.</p>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:13}}>
+            {GUIDES_DATA.map(guide=>(
+              <div key={guide.id} onClick={()=>setActiveGuide(guide.id)}
+                style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:2,padding:"20px 22px",cursor:"pointer",position:"relative",overflow:"hidden",transition:"all .2s"}}
+                onMouseEnter={e=>e.currentTarget.style.borderColor=guide.color+"44"}
+                onMouseLeave={e=>e.currentTarget.style.borderColor=C.border}>
+                <div style={{position:"absolute",top:0,left:0,width:3,height:"100%",background:`linear-gradient(to bottom,${guide.color},transparent)`}}/>
+                <div style={{fontSize:28,marginBottom:10}}>{guide.icon}</div>
+                <div style={{fontSize:15,fontWeight:"bold",color:C.white,marginBottom:7}}>{guide.title}</div>
+                <div style={{fontSize:12,color:C.muted,lineHeight:1.6,marginBottom:12}}>{guide.desc}</div>
+                <div style={{fontSize:9,letterSpacing:2,color:guide.color,textTransform:"uppercase"}}>{guide.phases.reduce((a,p)=>a+p.steps.length,0)} steps →</div>
+              </div>
+            ))}
+          </div>
+        </>}
+
+        {view==="guides"&&activeGuide&&<GuideViewer guide={GUIDES_DATA.find(g=>g.id===activeGuide)} onBack={()=>setActiveGuide(null)}/>}
+
+      </main>
+    </div>
+  );
+}
+
 // ─── ROOT APP ─────────────────────────────────────────────────────
 export default function App() {
   const [screen,setScreen]=useState(()=>ls.get("pb_auth_v6")?"dashboard":"login");
@@ -1111,10 +1601,11 @@ export default function App() {
   const shared={user,brand,onLogout:logout,notifs,onToggleNotifs:toggleNotifs,showNotifs,onMarkAll:markAllRead,addNotif};
 
   // Training section needs its own screen to manage sub-navigation
-  if(screen==="dashboard"&&section==="training") return <TrainingSection {...shared} progress={progress} onProgress={handleProgress} onBack={goHome}/>;
-  if(screen==="dashboard"&&section==="sales")    return <SalesSection {...shared} onBack={goHome}/>;
-  if(screen==="dashboard"&&section==="coaching") return <CoachingSection {...shared} onBack={goHome}/>;
-  if(screen==="dashboard"&&section==="certs")    return <CertsSection {...shared} progress={progress} onBack={goHome}/>;
+  if(screen==="dashboard"&&section==="training")   return <TrainingSection {...shared} progress={progress} onProgress={handleProgress} onBack={goHome}/>;
+  if(screen==="dashboard"&&section==="sales")      return <SalesSection {...shared} onBack={goHome}/>;
+  if(screen==="dashboard"&&section==="coaching")   return <CoachingSection {...shared} onBack={goHome}/>;
+  if(screen==="dashboard"&&section==="certs")      return <CertsSection {...shared} progress={progress} onBack={goHome}/>;
+  if(screen==="dashboard"&&section==="operations") return <OperationsSection {...shared} onBack={goHome}/>;
 
   return (
     <div style={{background:C.black,minHeight:"100vh",color:C.white}}>
